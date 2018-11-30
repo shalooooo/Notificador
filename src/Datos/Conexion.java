@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package notificador;
+package Datos;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,6 +14,7 @@ import java.sql.SQLException;
  * @author Gonzalo
  */
 public class Conexion {
+
     private Connection cnn;
     private final String BaseDeDatos = "jdbc:oracle:thin:@localhost:1521:xe";
     private final String Usuario = "pide_tu_estacionamiento";
@@ -30,7 +31,7 @@ public class Conexion {
     public void setCnn(Connection cnn) {
         this.cnn = cnn;
     }
-        
+
     public void desconectarBD() {
         try {
             this.getCnn().close();
@@ -38,36 +39,39 @@ public class Conexion {
             System.out.println(ee.getMessage());
         }
     }
-    
-    public Connection getConection()
-    {
-        try{
-        DriverManager.deregisterDriver(new oracle.jdbc.OracleDriver());
-        //String BaseDeDatos = "jdbc:oracle:thin:@localhost:1521:xe";
-        cnn= DriverManager.getConnection(BaseDeDatos,Usuario,Pass);
-            if(cnn==null)
-            {
+
+    public Connection getConection() {
+        try {
+            DriverManager.deregisterDriver(new oracle.jdbc.OracleDriver());
+            //String BaseDeDatos = "jdbc:oracle:thin:@localhost:1521:xe";
+            cnn = DriverManager.getConnection(BaseDeDatos, Usuario, Pass);
+            if (cnn == null) {
                 System.out.println("Conexion fallida");
             }
-        }
-        catch(SQLException e)
-        {
-            System.out.println("error"+e);
+        } catch (SQLException e) {
+            System.out.println("error" + e);
         }
         return cnn;
     }
-    
-    private void conectar() {
-        try{
-        Class.forName("oracle.jdbc.OracleDriver");
-        //String BaseDeDatos = "jdbc:oracle:thin:@localhost:1521:xe";
-        cnn= DriverManager.getConnection(BaseDeDatos,Usuario,Pass);
-            if(cnn==null)
-            {
+
+    public Conexion conectar() {
+        try {
+            Class.forName("oracle.jdbc.OracleDriver");
+            //String BaseDeDatos = "jdbc:oracle:thin:@localhost:1521:xe";
+            cnn = DriverManager.getConnection(BaseDeDatos, Usuario, Pass);
+            if (cnn == null) {
                 System.out.println("Conexion fallida");
             }
+        } catch (ClassNotFoundException | SQLException e) {
+            System.out.println("error" + e);
         }
-        catch(ClassNotFoundException | SQLException e)
-        {System.out.println("error"+e);}
+        return this;
+    }
+    public void close() {
+        try {
+            cnn.close();
+        } catch (Exception e) {
+            System.out.println("error cerrando la conexion");
+        }
     }
 }
