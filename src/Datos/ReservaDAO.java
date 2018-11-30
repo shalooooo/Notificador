@@ -12,21 +12,21 @@ import java.util.logging.Logger;
 import oracle.jdbc.OracleCallableStatement;
 import oracle.jdbc.OracleTypes;
 import Entidades.Reserva;
-import java.sql.Date;
 import java.util.ArrayList;
 import static Util.Utilidades.diferencia;
+
 /**
  *
  * @author operaciones
  */
 public class ReservaDAO {
-    
+
     Conexion conn;
 
     public ReservaDAO() {
         conn = new Conexion();
     }
-    
+
     public ArrayList<Reserva> reservasANotificar() {
         OracleCallableStatement cs = null;
         Connection cn = conn.conectar().getCnn();
@@ -51,9 +51,9 @@ public class ReservaDAO {
                 reserva.setEstPagoId(rs.getInt("EST_PAGO_ID_ESTADO"));
                 reserva.setVehiculoId(rs.getInt("VEHICULO_ID"));
                 reserva.setAvisoPreventivo(rs.getDate("AVISO_PREVENTIVO"));
-                if (reserva.getTiempoFin() == null 
-                    && reserva.getAvisoPreventivo() == null
-                    && diferencia(reserva.getTiempoInicio()) >= 10) {
+                if (reserva.getTiempoFin() == null
+                        && reserva.getAvisoPreventivo() == null
+                        && diferencia(reserva.getTiempoInicio()) >= 10) {
                     listaReservas.add(reserva);
                 }
             }
@@ -68,32 +68,14 @@ public class ReservaDAO {
         }
         return listaReservas;
     }
-    
-    public boolean modificarReserva(Reserva reserva) {
+
+    public boolean modificarAviso(int idReserva) {
         OracleCallableStatement cs = null;
         Connection cn = conn.conectar().getCnn();
         try {
-            /*PROCEDURE SP_MODIFICAR_RESERVA(	P_ID_RESERVA RESERVA.ID_RESERVA%TYPE,
-                                                P_TIEMPO_INICIO RESERVA.TIEMPO_INICIO%TYPE,
-                                                P_TIEMPO_FIN RESERVA.TIEMPO_FIN%TYPE,
-                                                P_ESTACIONAMIENTO_ID RESERVA.ESTACIONAMIENTO_ID%TYPE,
-                                                P_USUARIO_ID_USUARIO RESERVA.USUARIO_ID_USUARIO%TYPE,
-                                                P_MONTO_TARIFA RESERVA.MONTO_TARIFA%TYPE,
-                                                P_MINUTOS_USADOS RESERVA.MINUTOS_USADOS%TYPE,
-                                                P_TOTAL RESERVA.TOTAL%TYPE,
-                                                P_EST_PAGO_ID_ESTADO RESERVA.EST_PAGO_ID_ESTADO%TYPE,
-                                                P_VEHICULO_ID RESERVA.VEHICULO_ID%TYPE);*/
-            cs = (OracleCallableStatement) cn.prepareCall(" { call RESERVA_PKG.SP_MODIFICAR_RESERVA(?,?,?,?,?,?,?,?,?,?)}");
-            cs.setInt(1, reserva.getIdReserva());
-            cs.setDate(2, (Date) reserva.getTiempoInicio());
-            cs.setDate(3, (Date) reserva.getTiempoFin());
-            cs.setInt(4, reserva.getEstacionamientoId());
-            cs.setInt(5, reserva.getUsuarioId());
-            cs.setInt(6, reserva.getMontoTarifa());
-            cs.setInt(7, reserva.getMinutosUsados());
-            cs.setInt(8, reserva.getTotal());
-            cs.setInt(9, reserva.getEstPagoId());
-            cs.setInt(10, reserva.getVehiculoId());
+            /*PROCEDURE SP_MODIFICAR_AVISO(P_ID_RESERVA RESERVA.ID_RESERVA%TYPE);*/
+            cs = (OracleCallableStatement) cn.prepareCall(" { call RESERVA_PKG.SP_MODIFICAR_AVISO(?)}");
+            cs.setInt(1, idReserva);
             cs.execute();
             // Cierre de conexion y liberacion de recursos
             cn.close();
@@ -106,7 +88,5 @@ public class ReservaDAO {
             conn.close();
         }
     }
-    
-    
-    
+
 }

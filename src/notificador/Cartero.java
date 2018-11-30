@@ -5,9 +5,6 @@
  */
 package notificador;
 
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Transport;
 import Datos.ReservaDAO;
 import Datos.UsuarioDAO;
 import Entidades.Reserva;
@@ -18,26 +15,31 @@ import java.util.Date;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+
 /**
  *
  * @author Gonzalo
  */
 public class Cartero implements Job {
-    
+
     @Override
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
-        System.out.println("Este es un mensaje impreso a las : " + new Date());
+
         // Rescatar lista de reservas a notificar
-        ReservaDAO reservaDAO = new ReservaDAO();  
+        ReservaDAO reservaDAO = new ReservaDAO();
         UsuarioDAO usuarioDAO = new UsuarioDAO();
         ArrayList<Reserva> listaReservas = reservaDAO.reservasANotificar();
         // Ciclo de notificaciones y actualizaciones en la BD        
-        for(Reserva r: listaReservas){
+        for (Reserva r : listaReservas) {
             Usuario u = usuarioDAO.mostrarUsuario(r.getUsuarioId());
             enviarNotificacion(u.getEmail());
+            if (reservaDAO.modificarAviso(r.getIdReserva())) {
+                System.out.println("Se aviso al cliente: " + u.getNombre() + " " + u.getApePaterno() + " " + u.getApeMaterno() + ", por su Reserva de ID: " + r.getIdReserva() + ", a las " + new Date());
+            } else {
+                System.out.println("No se pudo avisar al cliente: " + u.getNombre() + " " + u.getApePaterno() + " " + u.getApeMaterno() + ", por su Reserva de ID: " + r.getIdReserva());
+            }
         }
-        
+
     }
-    
-    
+
 }
